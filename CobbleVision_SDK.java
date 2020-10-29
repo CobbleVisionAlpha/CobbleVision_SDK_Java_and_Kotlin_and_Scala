@@ -54,7 +54,7 @@ public class CobbleVisionAPI{
   // #####################################################
 
   // # Return of the following functions is specified within this type description
-  // # @typedef {Object} Entity Entity from HttpClient
+  // # @typedef {Object} CompletableFuture <HTTPEntity> Entity from HttpClient as Completable Future
   // # @method {InputStream} getContent() returns stream of Content
 
   // # This function uploads a media file to CobbleVision. You can find it after login in your media storage. Returns a response object with body, response and headers properties, deducted from npm request module
@@ -133,4 +133,111 @@ public class CobbleVisionAPI{
       throw new Exception(e.printStackTrace)
     }
   }
+  
+  // # This function deletes Media from CobbleVision 
+  // # @async
+  // # @function deleteMediaFile()  
+  // # @param {array} IDArray Array of ID's as Strings
+  // # @returns {Response} This return the DeleteMediaResponse. The body is in JSON format.
+
+@Async
+  public CompletableFuture <HTTPEntity> deleteMediaFileAsync(String[] IDArray) throws InterruptedException{
+    try{
+      private String endpoint = "media"
+      
+      if(this.BaseURL.charAt(this.BaseURL.length - 1) != "/"){
+        throw new Exception("Cobble BasePath must end with a slash '/' ")
+      }
+      
+      private String[] keyArray = ["IDArray", "Your Api User Key", "Your Api Token"]
+      private Object[] valueArray = [IDArray, apiUserName, apiToken]
+      private String[] typeArray = ["Array", "String", "String"]
+      
+      try{
+        checkTypeOfParameter(valueArray, typeArray)
+      }catch e as Exception{
+        private int err_message = parseInt(e.Message)
+        if(err_message instanceof Integer){
+          throw new Exception("The provided data is not valid: " + keyArray[err_message] + "is not of type " + typeArray[err_message])
+        }else{
+          throw new Exception(e.printStackTrace)
+        }
+      }
+      
+      public String[] invalidMedia = checkArrayForValidObjectID(IDArray)
+      
+      if(invalidMedia.length > 0){
+        throw new Exception("You supplied a media ID which is invalid in format!")
+      }
+      
+      JSONArray jsArray = new JSONArray();
+      for (int i=0; i<IDArray.length; i++){
+        jsArray.put(IDArray[i]);
+      }
+      
+      private ClosableHTTPClient client = HttpClients.createDefault();
+      private HTTPDelete httpDelete  = new HTTPDelete(this.baseURL+endpoint + "?id=" + jsArray.toString())
+      httpDelete.setHeader("Accept", "application/json")
+      httpDelete.setHeader("Content-Type", "application/json")
+      private UsernamePasswordCredentials creds = new usernamePasswordCredentials(apiUserName, apiToken)
+      httpDelete.setHeader(new BasicScheme().authenticate(creds, httpPost, null))
+      
+      private ClosableHTTPResponse response = client.execute(httpDelete)
+      private HttpEntity deleteEntity = response.getEntity()
+      client.close()
+      
+      if(GlobalVars.debugging) {
+        System.out.println("Response from Upload Media Request = " + response.ToString())
+      }
+      
+      return CompletableFuture.completeFuture(deleteEntity);
+    }catch e as Exception{
+    
+      if(GlobalVars.debugging){
+        System.out.println(e.printStackTrace)
+      }
+    
+      throw new Exception(e.printStackTrace)
+    }
+  }
+  
+  // # Launch a calculation with CobbleVision's Web API. Returns a response object with body, response and headers properties, deducted from npm request module;
+  // # @async
+  // # @function launchCalculation() 
+  // # @param {array} algorithms Array of Algorithm Names
+  // # @param {array} media Array of Media ID's  
+  // # @param {string} type Type of Job - Currently Always "QueuedJob"
+  // # @param {string} [notificationURL] Optional - Notify user upon finishing calculation!
+  // # @returns {Response} This returns the LaunchCalculationResponse. The body is in JSON format.  
+
+  // # This function waits until the given calculation ID's are ready to be downloaded!
+  // # @async
+  // # @function waitForCalculationCompletion() 
+  // # @param {array} calculationIDArray Array of Calculation ID's
+  // # @returns {Response} This returns the WaitForCalculationResponse. The body is in JSON format.   
+
+  // # This function deletes Result Files or calculations in status "waiting" from CobbleVision. You cannot delete finished jobs beyond their result files, as we keep them for billing purposes.
+  // # @async
+  // # @function deleteCalculation()
+  // # @param {array} IDArray Array of ID's as Strings
+  // # @returns {Response} This returns the DeleteCalculationResponse. The body is in JSON format.
+
+
+  // # Get Calculation Result with CobbleVision's Web API. Returns a response object with body, response and headers properties, deducted from npm request module;
+  // # @async
+  // # @function getCalculationResult()
+  // # @param {array} IDArray ID of calculation to return result Array 
+  // # @param {boolean} returnOnlyStatusBool Return full result or only status? See Doc for more detailed description!
+  // # @returns {Response} This returns the GetCalculationResult. The body is in json format.
+
+
+  // # Request your calculation result by ID with the CobbleVision API. Returns a response object with body, response and headers properties, deducted from npm request module;
+  // # @async
+  // # @function getCalculationVisualization()
+  // # @param {array} id ID of calculation to return result/check String
+  // # @param {boolean} returnBase64Bool Return Base64 String or image buffer as string?
+  // # @param {integer} width target width of visualization file
+  // # @param {integer} height target height of visualization file
+  // # @returns {Response} This returns the GetCalculationVisualization Result. The body is in binary format.
+
 }
