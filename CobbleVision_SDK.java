@@ -39,10 +39,10 @@ public class CobbleVisionAPI{
     return true;
   }
   
-  # Function allows you to set the debugging variable
-  # @function setDebugging()
-  # @param {Boolean} debugBool
-  # @returns {Boolean} Indicating success of setting Api Auth.
+  // # Function allows you to set the debugging variable
+  // # @function setDebugging()
+  // # @param {Boolean} debugBool
+  // # @returns {Boolean} Indicating success of setting Api Auth.
   
   public Boolean setDebugging(debugBool){
     this.debugging = debugBool;
@@ -77,7 +77,7 @@ public class CobbleVisionAPI{
       }
       
       private String[] keyArray = ["price_category", "publicBool", "name", "tags", "Your Api User Key", "Your Api Token"]
-      private Object[] valueArray = [pricate_category, publicBool, name, tags, apiUserName, apiToken]
+      private Object[] valueArray = [price_category, publicBool, name, tags, apiUserName, apiToken]
       private String[] typeArray = ["String", "Boolean", "String", "Array", "String", "String"]
       
       try{
@@ -165,7 +165,6 @@ public class CobbleVisionAPI{
       }
       
       public String[] invalidMedia = checkArrayForValidObjectID(IDArray)
-      
       if(invalidMedia.length > 0){
         throw new Exception("You supplied a media ID which is invalid in format!")
       }
@@ -210,17 +209,180 @@ public class CobbleVisionAPI{
   // # @param {string} [notificationURL] Optional - Notify user upon finishing calculation!
   // # @returns {Response} This returns the LaunchCalculationResponse. The body is in JSON format.  
 
+  @Async
+  public CompletableFuture <HTTPEntity> launchCalculationAsync(String[] algorithms, String[] media, String type, String notificationURL) throws InterruptedException{
+    try{
+      private String endpoint = "calculation"
+      
+      if(this.BaseURL.charAt(this.BaseURL.length - 1) != "/"){
+        throw new Exception("Cobble BasePath must end with a slash '/' ")
+      }
+      
+      private String[] keyArray = ["algorithms", "media", "type", "notificationURL", "Your Api User Key", "Your Api Token"]
+      private Object[] valueArray = [algorithms, media, type, notificationURL, apiUserName, apiToken]
+      private String[] typeArray = ["Array", "Array", "String", "String", "String", "String"]
+      
+      try{
+        checkTypeOfParameter(valueArray, typeArray)
+      }catch e as Exception{
+        private int err_message = parseInt(e.Message)
+        if(err_message instanceof Integer){
+          throw new Exception("The provided data is not valid: " + keyArray[err_message] + "is not of type " + typeArray[err_message])
+        }else{
+          throw new Exception(e.printStackTrace)
+        }
+      }
+      
+      if(!check(this.valid_job_types, type)){
+        throw new Exception("Job Type is not valid!")
+      }
+      
+      public String[] invalidMedia = checkArrayForValidObjectID(media)
+      if(invalidMedia.length > 0){
+        throw new Exception("You supplied a media ID which is invalid in format!")
+      }
+
+      public String[] invalidCalcs = checkArrayForValidObjectID(algorithms)
+      if(invalidCalcs.length > 0){
+        throw new Exception("You supplied a media ID which is invalid in format!")
+      }
+
+      private JSONObject obj = new JSONObject()
+      obj.put("media", media)
+      obj.put("algorithms", algorithms)
+      obj.put("type", type)
+      obj.put("notificationURL", notificationURL)
+      obj.put("file", new String(file.toString(), "ISO-8859-1"))
+      
+      private String jsonString = obj.toString()
+     
+      private ClosableHTTPClient client = HttpClients.createDefault();
+      private HTTPPost HttpPost = new HttpPost(this.baseURL+endpoint)
+      private StringEntity entity = new StringEntitty(jsonString)
+      httpPost.setEntity(entity)
+      httpPost.setHeader("Accept", "application/json")
+      httpPost.setHeader("Content-Type", "application/json")
+      private UsernamePasswordCredentials creds = new usernamePasswordCredentials(apiUserName, apiToken)
+      httpPost.setHeader(new BasicScheme().authenticate(creds, httpPost, null))
+      
+      private ClosableHTTPResponse response = client.execute(httpPost)
+      private HttpEntity postEntity = response.getEntity()
+      client.close()
+      
+      if(GlobalVars.debugging) {
+        System.out.println("Response from Upload Media Request = " + response.ToString())
+      }
+      
+      return CompletableFuture.completeFuture(postEntity);
+    }catch e as Exception{
+    
+      if(GlobalVars.debugging){
+        System.out.println(e.printStackTrace)
+      }
+    
+      throw new Exception(e.printStackTrace)
+    }
+  }
+
   // # This function waits until the given calculation ID's are ready to be downloaded!
   // # @async
   // # @function waitForCalculationCompletion() 
   // # @param {array} calculationIDArray Array of Calculation ID's
   // # @returns {Response} This returns the WaitForCalculationResponse. The body is in JSON format.   
 
+@Async
+  public CompletableFuture <HTTPEntity> waitForCalculationCompletion(String[] calculationIDArray) throws InterruptedException{
+    try{
+      private String endpoint = "calculation"
+      
+      if(this.BaseURL.charAt(this.BaseURL.length - 1) != "/"){
+        throw new Exception("Cobble BasePath must end with a slash '/' ")
+      }
+      
+      private String[] keyArray = ["calculationIDArray", "Your Api User Key", "Your Api Token"]
+      private Object[] valueArray = [calculationIDArray, apiUserName, apiToken]
+      private String[] typeArray = ["Array", "String", "String"]
+      
+      try{
+        checkTypeOfParameter(valueArray, typeArray)
+      }catch e as Exception{
+        private int err_message = parseInt(e.Message)
+        if(err_message instanceof Integer){
+          throw new Exception("The provided data is not valid: " + keyArray[err_message] + "is not of type " + typeArray[err_message])
+        }else{
+          throw new Exception(e.printStackTrace)
+        }
+      }
+      
+      public String[] invalidCalcs = checkArrayForValidObjectID(calculationIDArray)
+      if(invalidCalcs.length > 0){
+        throw new Exception("You supplied a calc ID which is invalid in format!")
+      }
+      
+      JSONArray jsArray = new JSONArray();
+      for (int i=0; i < calculationIDArray.length; i++){
+        jsArray.put(calculationIDArray[i]);
+      }
+      
+      calculationFinishedBool=false
+      while(calculationFinishedBool == False){
+        private ClosableHTTPClient client = HttpClients.createDefault();
+        private HTTPGet httpGet = new HTTPGet(this.baseURL+endpoint + "?id=" + jsArray.toString())
+        httpDelete.setHeader("Accept", "application/json")
+        httpDelete.setHeader("Content-Type", "application/json")
+        private UsernamePasswordCredentials creds = new usernamePasswordCredentials(apiUserName, apiToken)
+        httpDelete.setHeader(new BasicScheme().authenticate(creds, httpPost, null))
+      
+        private ClosableHTTPResponse response = client.execute(httpGet)
+        private HttpEntity getEntity = response.getEntity()
+        client.close()
+        
+        try{
+          private JSONArray o = (JSONArray) new JSONTokener(EntityUtils.toString(request.getEntity().getContent()).nextValue()
+        }catch e as Exception{
+          private JSONObject o = new JSONObject(EntityUtils.toString(request.getEntity().getContent()), StandardCharsets.UTF_8)
+        }
+
+        if(o instanceof JSONArray){
+          for(int v=0; v<o.length, v++){
+            if(o[v].status === "finished"){
+              calculationFinishedBool=true
+            }else{
+              calculationFinishedBool=false
+              break
+            }
+          }
+        }else{
+          if(o.error != null){
+            calculationFinishedBool=true
+          }
+        }
+
+        if(calculationFinishedBool==false){
+          wait(3000)
+        }
+
+        if(GlobalVars.debugging) {
+          System.out.println("Response from Upload Media Request = " + response.ToString())
+        }
+      
+        return CompletableFuture.completeFuture(getEntity);
+    }catch e as Exception{
+    
+      if(GlobalVars.debugging){
+        System.out.println(e.printStackTrace)
+      }
+    
+      throw new Exception(e.printStackTrace)
+    }
+  }
+
   // # This function deletes Result Files or calculations in status "waiting" from CobbleVision. You cannot delete finished jobs beyond their result files, as we keep them for billing purposes.
   // # @async
   // # @function deleteCalculation()
   // # @param {array} IDArray Array of ID's as Strings
   // # @returns {Response} This returns the DeleteCalculationResponse. The body is in JSON format.
+  
 
 
   // # Get Calculation Result with CobbleVision's Web API. Returns a response object with body, response and headers properties, deducted from npm request module;
