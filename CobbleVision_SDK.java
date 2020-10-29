@@ -85,7 +85,7 @@ public class CobbleVisionAPI{
       }catch e as Exception{
         private int err_message = parseInt(e.Message)
         if(err_message instanceof Integer){
-          throw new Exception("The provided data is not valid: " + keyArray[err_message] + "is not of type " + "typeArray[err_message])
+          throw new Exception("The provided data is not valid: " + keyArray[err_message] + "is not of type " + typeArray[err_message])
         }else{
           throw new Exception(e.printStackTrace)
         }
