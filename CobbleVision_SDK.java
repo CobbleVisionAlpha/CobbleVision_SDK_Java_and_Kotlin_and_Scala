@@ -622,3 +622,24 @@ public Boolean wait (int ms) throws Exception{
     throw new Exception(e.Message)
   }
 }
+
+// Check if element part of array
+// @sync
+// @function check()
+// @param {number} ms time to wait in ms
+// @returns {boolean} Success of Wait
+
+public Boolean check( Object[] targetArray, String targetKey){
+  try{
+    List<Object> targetList = Array.asList(targetArray)
+    
+    if(targetList.contains(targetKey)){
+      return true;
+    }else{
+      return false;
+    }
+    
+  }catch Exception as e{
+    throw new Exception(e.message)
+  }
+}
