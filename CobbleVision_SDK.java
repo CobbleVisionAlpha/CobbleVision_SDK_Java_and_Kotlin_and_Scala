@@ -564,21 +564,61 @@ public class CobbleVisionAPI{
 
 }
 
-# TypeChecking of Values
-# @sync
-# @function checktypeOfParameter()
-# @param {array} targetArray Array of values to be checked
-# @param {array} typeArray Array of types in strings to be checked against
-# @returns {boolean} Success of Check
+// TypeChecking of Values
+// @sync
+// @function checktypeOfParameter()
+// @param {array} targetArray Array of values to be checked
+// @param {array} assertTypeArray Array of types in strings to be checked against
+// @returns {boolean} Success of Check
 
-# Check Array of Mongo IDs for Invalid Values
-# @sync
-# @function checkIDArrayForInvalidValues()
-# @param {array} IDArray Array of Mongo IDs
-# @returns {boolean} Success of Check
+public Boolean checkTypeOfParameter(Object[] targetArray, Object[] assertTypeArray) throws Exception{
+  try{
+    for(int i=0; i < targetArray.length;i++){
+      if(targetArray[i].getClass().getSimpleName() != assertTypeArray[i]){
+        if(assertTypeArray[i] === "Array"){
+          if(!(targetArray[i].getChars().isArray())){
+            return false;
+          }
+        }else{
+          return false;
+        }
+      }else{
+        return true
+      }
+    }
+  }catch Exception as e{
+    throw new Error(e.Message)
+  }
+}
 
-# Wait using python sleep function
-# @async
-# @function wait()
-# @param {number} timeInMS time to wait in ms
-# @returns {boolean} Success of Wait
+// Check Array of Mongo IDs for Invalid Values
+// @sync
+// @function checkIDArrayForInvalidValues()
+// @param {array} IDArray Array of Mongo IDs
+// @returns {boolean} Success of Check
+
+public Boolean checkIDArrayForInvalidValues(String[] IDArray) throws Exception{
+  try{
+    for(int s = 0; s < IDArray.length; s++){
+      ObjectID = org.bson.types.ObjectId(IDArray[s]);
+    }
+    return true
+  }catch Exception as e{
+    throw new Error(e.Message)
+  }
+}
+
+// Wait using python sleep function
+// @sync
+// @function wait()
+// @param {number} ms time to wait in ms
+// @returns {boolean} Success of Wait
+
+public Boolean wait (int ms) throws Exception{
+  try{
+    Thread.sleep(ms)
+    return true
+  }catch Exception as e{
+    throw new Exception(e.Message)
+  }
+}
