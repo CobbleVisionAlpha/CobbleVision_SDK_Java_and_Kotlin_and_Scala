@@ -620,7 +620,6 @@ public Boolean checkIDArrayForInvalidValues(String[] IDArray) throws Exception{
   }
 }
 
-// Wait using python sleep function
 // @sync
 // @function wait()
 // @param {number} ms time to wait in ms
