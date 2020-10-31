@@ -119,8 +119,8 @@ public class CobbleVisionAPI{
       private HttpEntity postEntity = response.getEntity()
       client.close()
       
-      if(GlobalVars.debugging) {
-        System.out.println("Response from Upload Media Request = " + response.ToString())
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
       }
       
       return CompletableFuture.completeFuture(postEntity);
@@ -185,8 +185,8 @@ public class CobbleVisionAPI{
       private HttpEntity deleteEntity = response.getEntity()
       client.close()
       
-      if(GlobalVars.debugging) {
-        System.out.println("Response from Upload Media Request = " + response.ToString())
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
       }
       
       return CompletableFuture.completeFuture(deleteEntity);
@@ -269,8 +269,8 @@ public class CobbleVisionAPI{
       private HttpEntity postEntity = response.getEntity()
       client.close()
       
-      if(GlobalVars.debugging) {
-        System.out.println("Response from Upload Media Request = " + response.ToString())
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
       }
       
       return CompletableFuture.completeFuture(postEntity);
@@ -362,8 +362,8 @@ public class CobbleVisionAPI{
           wait(3000)
         }
 
-        if(GlobalVars.debugging) {
-          System.out.println("Response from Upload Media Request = " + response.ToString())
+        if(GlobalVars.debugging){
+          System.out.println(EntityUtils.toString(response.getEntity());)
         }
       
         return CompletableFuture.completeFuture(getEntity);
@@ -427,7 +427,11 @@ public class CobbleVisionAPI{
       private ClosableHTTPResponse response = client.execute(httpDelete)
       private HttpEntity deleteEntity = response.getEntity()
       client.close()
-        
+      
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
+      }
+      
       return CompletableFuture.completeFuture(deleteEntity);
     }catch e as Exception{
     
@@ -490,7 +494,11 @@ public class CobbleVisionAPI{
       private ClosableHTTPResponse response = client.execute(httpGet)
       private HttpEntity getEntity = response.getEntity()
       client.close()
-        
+      
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
+      }
+      
       return CompletableFuture.completeFuture(getEntity);
     }catch e as Exception{
     
@@ -550,7 +558,11 @@ public class CobbleVisionAPI{
       private ClosableHTTPResponse response = client.execute(httpGet)
       private HttpEntity getEntity = response.getEntity()
       client.close()
-        
+      
+      if(GlobalVars.debugging){
+        System.out.println(EntityUtils.toString(response.getEntity());)
+      }
+      
       return CompletableFuture.completeFuture(getEntity);
     }catch e as Exception{
     
